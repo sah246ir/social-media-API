@@ -50,8 +50,8 @@ app.use("/action", followRoute)
 
 
 // server listen
-const server = app.listen(8000, () => {
-    console.log("200")
+const server = app.listen(process.env.PORT, () => {
+    console.log("app running on localhost:",process.env.PORT)
 })
 
 module.exports = server
