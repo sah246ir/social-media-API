@@ -1,3 +1,4 @@
+require('dotenv').config( );
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
@@ -11,7 +12,7 @@ const rateLimit = require("express-rate-limit");
 const input_sanitizer = require("express-mongo-sanitize")
 const helmet = require("helmet")
 
-require('dotenv').config({ path: '.env' });
+console.log(process.env.MONGO_URI)
   mongoose.connect(process.env.MONGO_URI, {
 
 })
@@ -50,7 +51,7 @@ app.use("/action", followRoute)
 
 
 // server listen
-const server = app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT || 8000, () => {
     console.log("app running on localhost:",process.env.PORT)
 })
 
