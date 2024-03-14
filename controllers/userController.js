@@ -60,8 +60,8 @@ async function deleteProfile(req, res) {
     // Deleting the user's profile from the database
     await User.deleteOne({ _id: { $eq: req.user._id } });
     await Post.deleteMany({ userID: { $eq: req.user._id } });
-    await Follow.deleteMany({ followeeID: { $eq: req.user._id } });
-    await Follow.deleteMany({ followerID: { $eq: req.user._id } });
+    await Follow.deleteMany({ followee: { $eq: req.user._id } });
+    await Follow.deleteMany({ follower: { $eq: req.user._id } });
 
     // Sending a success message as a response
     res.status(200).json({ message: 'Profile deleted successfully' });
@@ -74,18 +74,15 @@ async function deleteProfile(req, res) {
 
 async function viewUserProfile(req, res) {
   try {
-    // Extracting the user ID from the request parameters
-    const userId = req.params.userId;
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      res.status(400);
-      return res.json({ error: 'Invalid User ID format' });
-    }
+    // Extracting the username from the request parameters
+    const { username } = req.params;
 
-    // Finding the user in the database by their user ID
-    const user = await User.findById({ _id: { $eq: userId } });
+    // Finding the user in the database by their username
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
     // Sending the user's profile as a response
     res.status(200).json(user);
   } catch (error) {

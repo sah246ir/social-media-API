@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 async function getUserPosts(req, res) {
     try {
         const posts = await Post.find({
-            userID: { $eq: req.user._id },
+            user: { $eq: req.user._id },
         });
 
         res.status(200)
@@ -29,7 +29,7 @@ async function createPost(req, res) {
         }
         const post = new Post({
             textContent: textcontent,
-            userID: req.user._id,
+            user: req.user._id,
         });
 
         await post.save();
@@ -43,28 +43,31 @@ async function createPost(req, res) {
     }
 }
 
-async function getUserPostsByUserId(req, res) {
+async function getUserPostsByUsername(req, res) {
     try {
-        const user = await User.findById(req.params.userId)
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        const posts = await Post.find({
-            userID: { $eq: req.params.userId },
-        });
-
-        res.status(200)
-        return res.json({
-            username: user.username,
-            posts
-        });
+      // Extracting username from request parameters
+      const { username } = req.params;
+  
+      // Finding the user by username
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      // Fetching posts of the user
+      const posts = await Post.find({ user: user._id });
+  
+      // Sending the user's username and posts as a response
+      res.status(200).json({
+        username: user.username,
+        posts
+      });
     } catch (error) {
-        console.error(error);
-        res.status(500)
-        return res.json({ error: 'Internal Server Error' });
+      // Handling errors and sending an error response if retrieval fails
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
-}
-
+  }
 async function getPostById(req, res) {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.postId)) {
@@ -73,7 +76,7 @@ async function getPostById(req, res) {
         }
         const post = await Post.findOne({
             _id: { $eq: req.params.postId },
-            userID: { $eq: req.user._id },
+            user: { $eq: req.user._id },
         });
 
         if (!post) {
@@ -102,7 +105,7 @@ async function updatePost(req, res) {
         }
         const existingPost = await Post.findOne({
             _id: req.params.postId,
-            userID: req.user._id
+            user: req.user._id
         });
 
         if (!existingPost) {
@@ -112,7 +115,7 @@ async function updatePost(req, res) {
         await Post.findOneAndUpdate(
             {
                 _id: req.params.postId,
-                userID: req.user._id
+                user: req.user._id
             },
             {
                 textContent: { $eq: textcontent },
@@ -132,7 +135,7 @@ async function deletePost(req, res) {
     try {
         const existingPost = await Post.findOne({
             _id: req.params.postId,
-            userID: req.user._id
+            user: req.user._id
         });
 
         if (!existingPost) {
@@ -141,7 +144,7 @@ async function deletePost(req, res) {
         }
         await Post.findOneAndDelete({
             _id: req.params.postId,
-            userID: req.user._id
+            user: req.user._id
         });
 
         res.status(200)
@@ -156,11 +159,11 @@ async function deletePost(req, res) {
 async function getLatestPosts(req, res) {
     try {
 
-        const followeeIDs = await Follow.distinct('followeeID', { followerID: req.user._id });
+        const followeeIDs = await Follow.distinct('followee', { follower: req.user._id });
         const posts = await Post.aggregate([
             {
                 $match: {
-                    userID: { $in: followeeIDs }
+                    user: { $in: followeeIDs }
                 }
             }
             ,
@@ -181,7 +184,7 @@ async function getLatestPosts(req, res) {
 module.exports = {
     getUserPosts,
     createPost,
-    getUserPostsByUserId,
+    getUserPostsByUsername,
     getPostById,
     updatePost,
     deletePost,

@@ -15,18 +15,12 @@ const {
 
 router.use(verifyToken)
 
-router.get('/follow/:userId',followUser);
+router.get('/follow/:username',followUser);
 
-router.get('/unfollow/:userId',unfollowUser);
+router.get('/unfollow/:username',unfollowUser);
 
-router.get('/followers/:userId',getFollowers);
+router.get('/followers/:username',getFollowers); 
 
-router.get('/followers',getCurrentUserFollowersList);
-
-
-router.get('/following',getCurrentUserFollowingList);
-
-
-router.get('/following/:userId',getFollowing);
+router.get('/following/:username',getFollowing);
 
 module.exports = router;

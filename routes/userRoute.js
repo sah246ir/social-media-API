@@ -14,7 +14,7 @@ router.use(verifyToken)
 
 router.get('',viewProfile);
 
-router.get('/:userId',viewUserProfile);
+router.get('/:username',viewUserProfile);
 
 router.put('',updateProfile);
 
