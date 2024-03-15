@@ -21,7 +21,7 @@ router.post('',createPost);
 
 router.get('/user/:username',getUserPostsByUsername);
 
-router.get('/:postId',getPostById);
+router.get('/view/:postId',getPostById);
 
 router.put('/update/:postId',updatePost);
 

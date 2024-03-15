@@ -34,7 +34,7 @@ async function getConversation(req, res) {
         const receiver = await User.findOne({ username });
 
         if (!receiver) {
-            return res.status(404).json({ error: 'Receiver not found' });
+            return res.status(404).json({ error: 'user not found' });
         }
         await Message.updateMany({
             sender: receiver._id,
