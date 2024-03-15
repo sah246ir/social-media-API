@@ -25,7 +25,7 @@ async function getHomePageData(req, res) {
         // Generate links to unseen conversations
         const conversationLinks = unseenConversationUsernames.map(user => ({
             username: user.username,
-            link: `/messages/conversation/${user.username}`
+            conversationlink: `/messages/conversation/${user.username}`
         }));
 
         // Sending the combined data as a response
